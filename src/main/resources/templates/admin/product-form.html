@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('관리자 | ' + ${brand.name()}, '두툼장어 관리자')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+<div class="page" style="max-width:1240px">
+<nav style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:28px;font-weight:600">
+  <a href="/admin">대시보드</a><a href="/admin/products">상품</a><a href="/admin/brands">브랜드</a><a href="/admin/orders">주문/배송</a><a href="/admin/articles">콘텐츠</a><a href="/admin/inquiries">문의</a><a href="/admin/reviews">후기</a>
+</nav>
+<div class="page-head"><h1 th:text="${p.id == null ? '상품 등록' : '상품 수정'}"></h1>
+<p th:if="${p.id != null}"><a th:href="${p.path}" target="_blank" style="text-decoration:underline">상품 페이지 보기</a></p></div>
+<form th:action="@{/admin/products}" method="post" enctype="multipart/form-data" class="box form-grid">
+<input type="hidden" name="id" th:value="${p.id}">
+<div class="two"><div class="field"><label>상품명 *</label><input name="name" th:value="${p.name}" required maxlength="120"></div>
+<div class="field"><label>주소(slug) *</label><input name="slug" th:value="${p.slug}" required pattern="[a-z0-9-]{2,80}"><p class="hint">예) signature → /products/signature</p></div></div>
+<div class="two"><div class="field"><label>브랜드</label><select name="brand"><option th:each="b : ${brands.all()}" th:value="${b.code()}" th:selected="${p.brand == b.code()}" th:text="${b.name()}"></option></select><p class="hint">브랜드 추가·수정은 <a href="/admin/brands" style="text-decoration:underline">브랜드</a> 메뉴</p></div>
+<div class="field"><label>분류</label><select name="category"><option value="EEL" th:selected="${p.category == 'EEL'}">일반 상품</option><option value="GIFT" th:selected="${p.category == 'GIFT'}">선물세트</option></select></div></div>
+<div class="two">
+<div class="field"><label>가격(원) *</label><input type="number" name="price" th:value="${p.price}" min="0" required></div></div>
+<div class="two"><div class="field"><label>재고 *</label><input type="number" name="stock" th:value="${p.stock}" min="0" required></div>
+<div class="field"><label>규격 및 중량</label><input name="weight" th:value="${p.weight}"></div></div>
+<div class="two"><div class="field"><label>원산지</label><input name="origin" th:value="${p.origin}"><p class="hint">실제 원산지 표시 정보만 입력</p></div>
+<div class="field"><label>보관 방법</label><input name="storage" th:value="${p.storage}"></div></div>
+<div class="field"><label>배송 안내</label><input name="shippingInfo" th:value="${p.shippingInfo}"></div>
+<div class="field"><label>한 줄 소개</label><input name="summary" th:value="${p.summary}" maxlength="300"></div>
+<div class="field"><label>대표 이미지</label><input type="file" name="image" accept="image/jpeg,image/png,image/webp"><input name="imageUrl" th:value="${p.imageUrl}" placeholder="/images/... 또는 업로드" style="margin-top:6px"></div>
+<div class="field"><label>실제 상품 사진 URL (줄마다 1개)</label><textarea name="gallery" th:text="${p.gallery}"></textarea></div>
+<div class="field"><label>옵션 (줄마다 "이름 | 추가금액")</label><textarea name="optionsText" th:text="${optionsText}"></textarea><p class="hint">비워두면 옵션 없음. 기존 주문에는 영향 없음.</p></div>
+<div class="field"><label>상세 설명</label><textarea name="description" th:text="${p.description}"></textarea></div>
+<div class="field"><label>상품 특징</label><textarea name="features" th:text="${p.features}"></textarea></div>
+<div class="field"><label>손질 및 품질관리 과정</label><textarea name="process" th:text="${p.process}"></textarea></div>
+<div class="field"><label>조리 방법</label><textarea name="cooking" th:text="${p.cooking}"></textarea></div>
+<div class="field"><label>배송 및 포장</label><textarea name="packaging" th:text="${p.packaging}"></textarea></div>
+<div class="field"><label>FAQ ("Q: 질문" 다음 줄 "A: 답변")</label><textarea name="faq" th:text="${p.faq}"></textarea></div>
+<label class="check"><input type="hidden" name="_active" value="on"><input type="checkbox" name="active" th:checked="${p.active}"> 판매중</label>
+<label class="check"><input type="hidden" name="_featured" value="on"><input type="checkbox" name="featured" th:checked="${p.featured}"> 메인 시그니처 상품으로 노출</label>
+<button class="btn btn-burgundy" type="submit">저장</button>
+</form>
+</div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

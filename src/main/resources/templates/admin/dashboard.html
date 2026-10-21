@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('관리자 | ' + ${brand.name()}, '두툼장어 관리자')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+<div class="page" style="max-width:1240px">
+<nav style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:28px;font-weight:600">
+  <a href="/admin">대시보드</a><a href="/admin/products">상품</a><a href="/admin/brands">브랜드</a><a href="/admin/orders">주문/배송</a><a href="/admin/articles">콘텐츠</a><a href="/admin/inquiries">문의</a><a href="/admin/reviews">후기</a>
+</nav>
+<div class="page-head"><p class="eyebrow">ADMIN</p><h1>관리자</h1></div>
+<div class="two" style="grid-template-columns:repeat(3,1fr)">
+  <a class="box" href="/admin/orders?status=PAID"><h2>출고 대기 주문</h2><p style="font-size:32px" th:text="${pending}"></p></a>
+  <a class="box" href="/admin/products"><h2>등록 상품</h2><p style="font-size:32px" th:text="${productCount}"></p></a>
+  <a class="box" href="/admin/inquiries"><h2>미답변 문의</h2><p style="font-size:32px" th:text="${openInquiries}"></p></a>
+</div>
+</div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('고객 문의 | ' + ${brand.name()}, '두툼장어 상품, 주문, 배송 관련 문의를 남겨주세요.')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page narrow" style="max-width:640px">
+        <div class="page-head"><p class="eyebrow">CONTACT</p><h1>고객 문의</h1>
+            <p th:if="${!#strings.isEmpty(shop.company().phone())}" th:text="'고객센터 ' + ${shop.company().phone()} + ${#strings.isEmpty(shop.company().csHours()) ? '' : ' · ' + shop.company().csHours()}"></p></div>
+        <form th:action="@{/inquiry}" method="post" class="box form-grid">
+            <div class="two">
+                <div class="field"><label for="nm">이름</label><input id="nm" name="name" required maxlength="50" th:value="${me?.name}"></div>
+                <div class="field"><label for="em">답변 받을 이메일</label><input id="em" type="email" name="email" required maxlength="120" th:value="${me?.email}"></div>
+            </div>
+            <div class="field"><label for="tt">제목</label><input id="tt" name="title" required maxlength="200"></div>
+            <div class="field"><label for="ct">내용</label><textarea id="ct" name="content" required maxlength="4000" placeholder="주문 관련 문의는 주문번호를 함께 적어주세요."></textarea></div>
+            <p class="hint" style="font-size:12.5px;color:#8a8077">수집 항목: 이름, 이메일 · 이용 목적: 문의 답변 · 보유 기간: <a href="/policy/privacy" style="text-decoration:underline">개인정보처리방침</a>에 따름</p>
+            <button class="btn btn-burgundy btn-block" type="submit">문의 남기기</button>
+        </form>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

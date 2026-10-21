@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('회원가입 | ' + ${brand.name()}, '두툼장어 회원가입')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page narrow">
+        <div class="page-head" style="text-align:center"><p class="eyebrow">JOIN</p><h1>회원가입</h1></div>
+        <form th:action="@{/signup}" method="post" class="box form-grid">
+            <div class="field"><label for="em">이메일</label><input id="em" type="email" name="email" required maxlength="120" autocomplete="email"></div>
+            <div class="field"><label for="pw">비밀번호</label><input id="pw" type="password" name="password" required minlength="8" maxlength="64" autocomplete="new-password"><p class="hint">8자 이상</p></div>
+            <div class="field"><label for="nm">이름</label><input id="nm" name="name" required maxlength="50" autocomplete="name"></div>
+            <div class="field"><label for="ph">연락처 (선택)</label><input id="ph" name="phone" inputmode="tel" maxlength="30" autocomplete="tel"></div>
+            <label class="check"><input type="checkbox" name="agree" value="true" required> <span><a href="/policy/terms" target="_blank" style="text-decoration:underline">이용약관</a> 및 <a href="/policy/privacy" target="_blank" style="text-decoration:underline">개인정보 수집·이용</a>에 동의합니다. (필수)</span></label>
+            <button class="btn btn-burgundy btn-block" type="submit">가입하기</button>
+        </form>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

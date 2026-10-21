@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${p.name} + ' | ' + ${brand.name()}, ${p.summary ?: p.name})}"></head>
+<body class="has-mobile-buy">
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main>
+    <section class="pd-top">
+        <div class="pd-top-inner">
+            <div class="pd-image"><img th:src="${p.imageUrl ?: '/images/signature.jpg'}" th:alt="${p.name}" width="960" height="720"></div>
+            <div class="pd-info">
+                <nav class="crumbs" aria-label="위치"><a href="/">홈</a> › <a th:href="${(p.gift ? '/gifts' : '/products') + brands.query(p.brand)}" th:text="${p.gift ? '선물세트' : brands.get(p.brand).productTitle()}"></a></nav>
+                <p class="eyebrow" th:text="${p.gift ? 'GIFT COLLECTION' : 'SIGNATURE PRODUCT'}"></p>
+                <h1 th:text="${p.name}"></h1>
+                <p class="summary" th:text="${p.summary}"></p>
+                <p class="price" th:text="${#numbers.formatInteger(p.price, 1, 'COMMA')} + '원'"></p>
+                <dl class="pd-meta">
+                    <div th:if="${p.weight}"><dt>규격 및 중량</dt><dd th:text="${p.weight}"></dd></div>
+                    <div th:if="${p.origin}"><dt>원산지</dt><dd th:text="${p.origin}"></dd></div>
+                    <div th:if="${p.storage}"><dt>보관 방법</dt><dd th:text="${p.storage}"></dd></div>
+                    <div><dt>배송 안내</dt><dd><span th:text="${p.shippingInfo ?: '결제 완료 후 순차 출고'}"></span><br>
+                        <small th:text="'배송비 ' + ${#numbers.formatInteger(shop.shippingFee(), 1, 'COMMA')} + '원 (' + ${#numbers.formatInteger(shop.freeShippingOver(), 1, 'COMMA')} + '원 이상 무료)'"></small></dd></div>
+                </dl>
+                <form id="buy-form" class="pd-buy" th:action="@{/cart/add}" method="post" data-buy-form th:attr="data-price=${p.price}">
+                    <input type="hidden" name="productId" th:value="${p.id}">
+                    <div th:if="${!p.options.isEmpty()}" style="margin-bottom:14px">
+                        <label for="opt">옵션</label>
+                        <select id="opt" name="optionId" required>
+                            <option th:each="o : ${p.options}" th:value="${o.id}" th:attr="data-extra=${o.extraPrice}"
+                                    th:text="${o.name} + (${o.extraPrice} > 0 ? ' (+' + ${#numbers.formatInteger(o.extraPrice, 1, 'COMMA')} + '원)' : '')"></option>
+                        </select>
+                    </div>
+                    <label for="qty">수량</label>
+                    <div class="qty"><button type="button" data-qty="-1" aria-label="수량 감소">−</button><input id="qty" type="number" name="quantity" value="1" min="1" max="99"><button type="button" data-qty="1" aria-label="수량 증가">+</button></div>
+                    <div class="pd-total"><span>총 상품 금액</span><strong data-total></strong></div>
+                    <div class="pd-btns" th:unless="${p.soldOut}">
+                        <button type="submit" name="action" value="cart" class="btn btn-outline">장바구니</button>
+                        <button type="submit" name="action" value="buy" class="btn btn-gold">바로 구매</button>
+                    </div>
+                    <p class="soldout" th:if="${p.soldOut}">일시 품절된 상품입니다.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <nav class="pd-nav" aria-label="상품 정보 메뉴">
+        <ul>
+            <li th:if="${p.features}"><a href="#features">상품 특징</a></li>
+            <li th:if="${!p.galleryUrls.isEmpty()}"><a href="#photos">실제 상품 사진</a></li>
+            <li th:if="${p.process}"><a href="#process">손질 및 품질관리</a></li>
+            <li th:if="${p.cooking}"><a href="#cooking">조리 방법</a></li>
+            <li th:if="${p.packaging}"><a href="#packaging">배송 및 포장</a></li>
+            <li><a href="#reviews" th:text="'구매 후기 (' + ${reviews.size()} + ')'"></a></li>
+            <li th:if="${!p.faqItems.isEmpty()}"><a href="#faq">FAQ</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-light">
+        <div class="page" style="padding-top:0">
+            <section class="pd-section" id="description" th:if="${p.description}"><p class="pre" th:text="${p.description}"></p></section>
+            <section class="pd-section" id="features" th:if="${p.features}"><h2>상품 특징</h2><p class="pre" th:text="${p.features}"></p></section>
+            <section class="pd-section" id="photos" th:if="${!p.galleryUrls.isEmpty()}"><h2>실제 상품 사진</h2>
+                <div class="pd-gallery"><img th:each="g : ${p.galleryUrls}" th:src="${g}" th:alt="${p.name} + ' 상품 사진'" loading="lazy"></div></section>
+            <section class="pd-section" id="process" th:if="${p.process}"><h2>손질 및 품질관리 과정</h2><p class="pre" th:text="${p.process}"></p></section>
+            <section class="pd-section" id="cooking" th:if="${p.cooking}"><h2>조리 방법</h2><p class="pre" th:text="${p.cooking}"></p>
+                <p style="margin-top:14px"><a class="text-link" style="color:var(--royal-burgundy)" href="/guide">맛있게 즐기는 법 더 보기 →</a></p></section>
+            <section class="pd-section" id="packaging" th:if="${p.packaging}"><h2>배송 및 포장</h2><p class="pre" th:text="${p.packaging}"></p></section>
+
+            <section class="pd-section" id="reviews">
+                <h2>구매 후기 <small th:if="${!reviews.isEmpty()}" th:text="'★ ' + ${#numbers.formatDecimal(avgRating, 1, 1)}" style="font-size:16px;color:#b48a46"></small></h2>
+                <form th:if="${canReview}" th:action="@{/reviews/write/{id}(id=${p.id})}" method="post" class="box form-grid" style="margin-bottom:24px">
+                    <div class="field"><label for="rating">별점</label>
+                        <select id="rating" name="rating"><option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option><option value="2">★★</option><option value="1">★</option></select></div>
+                    <div class="field"><label for="rv">후기</label><textarea id="rv" name="content" minlength="5" maxlength="2000" required></textarea></div>
+                    <button class="btn btn-burgundy" type="submit">후기 등록</button>
+                </form>
+                <p th:if="${reviews.isEmpty()}" class="empty" style="padding:24px 0">아직 등록된 후기가 없습니다.</p>
+                <article class="review" th:each="r : ${reviews}">
+                    <div class="review-head"><span class="stars" th:text="${#strings.repeat('★', r.rating)}"></span><span th:text="${r.maskedName}"></span><time th:text="${#temporals.format(r.createdAt, 'yyyy.MM.dd')}"></time></div>
+                    <p th:text="${r.content}"></p>
+                </article>
+                <p sec:authorize="isAnonymous()" style="margin-top:16px;font-size:13px;color:#8a8077">후기는 상품을 구매한 회원만 작성할 수 있습니다.</p>
+            </section>
+
+            <section class="pd-section faq" id="faq" th:if="${!p.faqItems.isEmpty()}">
+                <h2>자주 묻는 질문</h2>
+                <details th:each="f : ${p.faqItems}"><summary th:text="${f[0]}"></summary><p th:text="${f[1]}"></p></details>
+                <p style="margin-top:20px"><a href="/inquiry" class="btn btn-dark">1:1 문의하기</a></p>
+            </section>
+            <p class="meta-date" th:text="'정보 수정일 ' + ${#temporals.format(p.updatedAt, 'yyyy.MM.dd')}"></p>
+        </div>
+    </div>
+
+    <!-- 모바일 하단 고정 구매 버튼 (위 form과 연결) -->
+    <div class="mobile-buy" th:unless="${p.soldOut}">
+        <button type="submit" form="buy-form" name="action" value="cart" class="btn btn-outline">장바구니</button>
+        <button type="submit" form="buy-form" name="action" value="buy" class="btn btn-gold">바로 구매</button>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

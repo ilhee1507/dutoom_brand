@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('관리자 | ' + ${brand.name()}, '브랜드 관리')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+<div class="page" style="max-width:1240px">
+<nav style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:28px;font-weight:600">
+  <a href="/admin">대시보드</a><a href="/admin/products">상품</a><a href="/admin/brands">브랜드</a><a href="/admin/orders">주문/배송</a><a href="/admin/articles">콘텐츠</a><a href="/admin/inquiries">문의</a><a href="/admin/reviews">후기</a>
+</nav>
+<div class="page-head" style="display:flex;justify-content:space-between;align-items:end"><h1>브랜드 관리</h1><a href="/admin/brands/new" class="btn btn-burgundy">브랜드 추가</a></div>
+<p class="hint" style="margin-bottom:12px">정렬 순서가 가장 작은 브랜드가 기본 브랜드(/)입니다. 그 외 브랜드는 /?brand=코드 로 접속합니다.</p>
+<div class="box table-wrap"><table class="table">
+<thead><tr><th>정렬</th><th>코드</th><th>브랜드명</th><th>메뉴명</th><th>주소</th></tr></thead>
+<tbody><tr th:each="b, s : ${items}">
+<td class="num" th:text="${b.sort}"></td><td th:text="${b.code}"></td>
+<td><a th:href="@{/admin/brands/{code}(code=${b.code})}" th:text="${b.name}" style="text-decoration:underline"></a> <span th:if="${s.first}" class="tag">기본</span></td>
+<td th:text="${b.productTitle}"></td>
+<td><a th:with="u=${s.first ? '/' : '/?brand=' + b.code}" th:href="${u}" th:text="${u}" target="_blank" style="text-decoration:underline"></a></td></tr></tbody></table></div>
+</div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('주문서 작성 | ' + ${brand.name()}, '두툼장어 주문서 작성')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page">
+        <div class="page-head"><p class="eyebrow">CHECKOUT</p><h1>주문서 작성</h1>
+            <p th:if="${guest}">비회원으로 주문합니다. <a href="/login" style="text-decoration:underline">로그인</a>하시면 주문 내역을 마이페이지에서 확인할 수 있습니다.</p></div>
+        <form th:action="@{/checkout(mode=${mode})}" th:object="${form}" method="post" class="checkout" novalidate>
+            <div>
+                <div class="field-error box" th:if="${#fields.hasErrors('*')}" data-form-errors>입력 내용을 확인해 주세요. 표시된 항목을 수정하면 주문이 진행됩니다.</div>
+                <div class="field-error box" th:if="${#fields.hasGlobalErrors()}" th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+                <section class="box">
+                    <h2>주문 상품</h2>
+                    <div class="table-wrap"><table class="table"><tbody>
+                    <tr th:each="l : ${lines}"><td><strong th:text="${l.product().name}"></strong>
+                        <span th:if="${l.option() != null}" th:text="' / ' + ${l.option().name}" style="color:#8a8077;font-size:13px"></span></td>
+                        <td class="num" th:text="${l.quantity()} + '개'"></td>
+                        <td class="num" th:text="${#numbers.formatInteger(l.lineTotal(), 1, 'COMMA')} + '원'"></td></tr>
+                    </tbody></table></div>
+                </section>
+                <section class="box form-grid">
+                    <h2>주문자 정보</h2>
+                    <div class="field"><label for="on">이름</label><input id="on" th:field="*{ordererName}" required maxlength="50" autocomplete="name"><p class="field-error" th:errors="*{ordererName}"></p></div>
+                    <div class="two">
+                        <div class="field"><label for="op">연락처</label><input id="op" th:field="*{ordererPhone}" required inputmode="tel" autocomplete="tel" placeholder="010-0000-0000"><p class="field-error" th:errors="*{ordererPhone}"></p></div>
+                        <div class="field"><label for="oe">이메일</label><input id="oe" type="email" th:field="*{ordererEmail}" required autocomplete="email"><p class="field-error" th:errors="*{ordererEmail}"></p></div>
+                    </div>
+                    <div class="field" th:if="${guest}"><label for="gp">비회원 주문조회 비밀번호</label><input id="gp" type="password" th:field="*{guestPassword}" minlength="4" maxlength="50" autocomplete="new-password"><p class="hint">주문번호와 함께 주문 조회 시 사용합니다. (4자 이상)</p><p class="field-error" th:errors="*{guestPassword}"></p></div>
+                </section>
+                <section class="box form-grid">
+                    <h2>배송지 정보</h2>
+                    <div class="two">
+                        <div class="field"><label for="rn">받는 분</label><input id="rn" th:field="*{recipientName}" required maxlength="50"><p class="field-error" th:errors="*{recipientName}"></p></div>
+                        <div class="field"><label for="rp">받는 분 연락처</label><input id="rp" th:field="*{recipientPhone}" required inputmode="tel"><p class="field-error" th:errors="*{recipientPhone}"></p></div>
+                    </div>
+                    <div class="field"><label for="zc">우편번호</label>
+                        <div style="display:flex;gap:8px;max-width:340px"><input id="zc" th:field="*{zipcode}" required maxlength="10" inputmode="numeric" autocomplete="postal-code" data-postcode><button type="button" class="btn btn-brown" data-postcode style="flex:none;padding:0 18px">주소 검색</button></div>
+                        <p class="field-error" th:errors="*{zipcode}"></p></div>
+                    <div class="field"><label for="a1">주소</label><input id="a1" th:field="*{address1}" required maxlength="200" autocomplete="address-line1"><p class="field-error" th:errors="*{address1}"></p></div>
+                    <div class="field"><label for="a2">상세 주소</label><input id="a2" th:field="*{address2}" maxlength="200" autocomplete="address-line2"></div>
+                    <div class="field"><label for="mm">배송 메모</label><input id="mm" th:field="*{memo}" maxlength="300" placeholder="예) 부재 시 문 앞에 놓아주세요"></div>
+                    <div class="field"><label for="gm">선물 메시지 카드 (선택)</label><textarea id="gm" th:field="*{giftMessage}" maxlength="500" placeholder="메시지 카드에 담을 문구를 입력하세요"></textarea></div>
+                </section>
+            </div>
+            <aside class="box summary-box">
+                <th:block th:fragment="totals">
+                    <h2>결제 금액</h2>
+                    <div class="sum-row"><span>상품 금액</span><span th:text="${#numbers.formatInteger(itemsAmount, 1, 'COMMA')} + '원'"></span></div>
+                    <div class="sum-row"><span>배송비</span><span th:text="${shippingFee == 0 ? '무료' : #numbers.formatInteger(shippingFee, 1, 'COMMA') + '원'}"></span></div>
+                    <div class="sum-row sum-total"><span>총 결제 금액</span><span th:text="${#numbers.formatInteger(totalAmount, 1, 'COMMA')} + '원'"></span></div>
+                </th:block>
+                <label class="check" style="margin:18px 0 14px"><input type="checkbox" th:field="*{agree}"> <span>주문 상품 정보와 결제 금액을 확인했으며, <a href="/policy/privacy" target="_blank" style="text-decoration:underline">개인정보 수집·이용</a>에 동의합니다.</span></label>
+                <button type="submit" class="btn btn-burgundy btn-block" style="min-height:56px">결제하기</button>
+            </aside>
+        </form>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<!--/* 카카오(다음) 우편번호 서비스: API 키 불필요. 로드 실패 시 직접 입력 */-->
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" async></script>
+<script>
+// 검증 실패로 다시 그려진 경우: 첫 오류 항목으로 이동
+const firstErr = [...document.querySelectorAll('.checkout .field-error')].find(e => e.textContent.trim());
+if (firstErr) {
+    const input = firstErr.closest('.field')?.querySelector('input,textarea,select');
+    (input || firstErr).scrollIntoView({block: 'center'});
+    input?.focus({preventScroll: true});
+}
+document.querySelectorAll('[data-postcode]').forEach(el => el.addEventListener('click', () => {
+    if (!window.daum || !daum.Postcode) return alert('주소 검색을 불러오지 못했습니다. 직접 입력해 주세요.');
+    new daum.Postcode({
+        oncomplete(d) {
+            const extra = [d.bname && /[동로가]$/.test(d.bname) ? d.bname : '', d.buildingName && d.apartment === 'Y' ? d.buildingName : ''].filter(Boolean).join(', ');
+            document.getElementById('zc').value = d.zonecode;
+            document.getElementById('a1').value = (d.userSelectedType === 'J' ? d.jibunAddress : d.roadAddress) + (extra && d.userSelectedType !== 'J' ? ` (${extra})` : '');
+            document.getElementById('a2').focus();
+        }
+    }).open();
+}));
+</script>
+</body>
+</html>

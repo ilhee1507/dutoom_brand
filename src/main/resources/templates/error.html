@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
+    <title>페이지를 찾을 수 없습니다 | 두툼장어</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<main class="page" style="text-align:center;min-height:70vh;display:flex;flex-direction:column;justify-content:center;align-items:center">
+    <p class="eyebrow" th:text="${status}">404</p>
+    <h1 style="font-family:var(--serif-kr);font-size:30px;margin-top:12px" th:text="${status == 404 ? '요청하신 페이지를 찾을 수 없습니다' : '일시적인 오류가 발생했습니다'}">요청하신 페이지를 찾을 수 없습니다</h1>
+    <p style="margin-top:28px"><a href="/" class="btn btn-gold">홈으로</a></p>
+</main>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('관리자 | ' + ${brand.name()}, '두툼장어 관리자')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+<div class="page" style="max-width:1240px">
+<nav style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:28px;font-weight:600">
+  <a href="/admin">대시보드</a><a href="/admin/products">상품</a><a href="/admin/brands">브랜드</a><a href="/admin/orders">주문/배송</a><a href="/admin/articles">콘텐츠</a><a href="/admin/inquiries">문의</a><a href="/admin/reviews">후기</a>
+</nav>
+<div class="page-head"><h1>주문 / 배송 관리</h1></div>
+<p style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"><a href="/admin/orders" th:style="${status == null} ? 'font-weight:700'">전체</a>
+<a th:each="s : ${statuses}" th:href="@{/admin/orders(status=${s})}" th:text="${s.label}" th:style="${status == s} ? 'font-weight:700'"></a></p>
+<div class="box table-wrap"><table class="table">
+<thead><tr><th>주문일</th><th>주문번호</th><th>주문자</th><th>상품</th><th class="num">금액</th><th>상태</th></tr></thead>
+<tbody><tr th:each="o : ${items}">
+<td th:text="${#temporals.format(o.createdAt, 'MM.dd HH:mm')}"></td>
+<td><a th:href="@{/admin/orders/{id}(id=${o.id})}" th:text="${o.orderNo}" style="text-decoration:underline"></a></td>
+<td th:text="${o.ordererName} + (${o.memberId == null} ? ' (비회원)' : '')"></td><td th:text="${o.orderName}"></td>
+<td class="num" th:text="${#numbers.formatInteger(o.totalAmount, 1, 'COMMA')}"></td><td><span class="status" th:text="${o.status.label}"></span></td></tr></tbody></table>
+<p class="empty" th:if="${items.isEmpty()}">주문이 없습니다.</p></div>
+</div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('맛있게 즐기는 법 | ' + ${brand.name()}, '장어 굽는 법, 장어 덮밥 레시피, 한 상 차림까지 두툼장어를 더 맛있게 즐기는 방법.')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page">
+        <nav class="crumbs" aria-label="위치"><a href="/">홈</a> › 맛있게 즐기는 법</nav>
+        <div class="page-head"><p class="eyebrow">DINING EXPERIENCE</p><h1>더 맛있게, 더 특별하게</h1><p>두툼장어를 더욱 특별하게 즐기는 방법.</p></div>
+        <ul class="product-grid">
+            <li class="product-card" th:each="g : ${guides}">
+                <a th:href="${g.path}"><img th:src="${g.imageUrl}" th:alt="${g.title}" loading="lazy"><h2 th:text="${g.title}"></h2><p th:text="${g.summary}"></p></a>
+            </li>
+        </ul>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,40 @@
+# 로컬 개발/검증용. 운영 배포는 별도 환경변수(.env)로 profile·PG 키·사업자 정보를 지정한다.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: dutoom
+      POSTGRES_USER: dutoom
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-dutoom}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dutoom"]
+      interval: 5s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      db: { condition: service_healthy }
+    # .env 의 ADMIN_*, COMPANY_*, SHOP_* 등을 그대로 앱에 전달 (값이 있는 키만 → 없으면 application.yml 기본값)
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # '-' (콜론 없음): .env 에 SPRING_PROFILES_ACTIVE= 로 비워두면 운영 프로필. 키 자체가 없을 때만 local
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE-local}
+      DB_URL: jdbc:postgresql://db:5432/dutoom
+      DB_PASSWORD: ${DB_PASSWORD:-dutoom}
+      SHOP_BASE_URL: ${SHOP_BASE_URL:-http://localhost:8088}
+      PAYMENT_MODE: ${PAYMENT_MODE:-mock}
+      TOSS_CLIENT_KEY: ${TOSS_CLIENT_KEY:-}
+      TOSS_SECRET_KEY: ${TOSS_SECRET_KEY:-}
+    ports:
+      - "${APP_PORT:-8088}:8080"   # 한 서버에 여러 프로젝트를 띄울 때 .env 에서 변경
+    volumes:
+      - uploads:/app/uploads
+
+volumes:
+  dbdata:
+  uploads:

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('관리자 | ' + ${brand.name()}, '두툼장어 관리자')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+<div class="page" style="max-width:1240px">
+<nav style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:28px;font-weight:600">
+  <a href="/admin">대시보드</a><a href="/admin/products">상품</a><a href="/admin/brands">브랜드</a><a href="/admin/orders">주문/배송</a><a href="/admin/articles">콘텐츠</a><a href="/admin/inquiries">문의</a><a href="/admin/reviews">후기</a>
+</nav>
+<div class="page-head"><h1 th:text="'주문 ' + ${o.orderNo}"></h1><p th:text="${#temporals.format(o.createdAt, 'yyyy.MM.dd HH:mm')} + ' · ' + ${o.paymentMethod ?: '미결제'}"></p></div>
+<section class="box table-wrap"><h2>주문 상품</h2><table class="table"><tbody>
+<tr th:each="it : ${o.items}"><td th:text="${it.productName} + (${it.optionName} != null ? ' / ' + ${it.optionName} : '')"></td><td class="num" th:text="${it.quantity}"></td><td class="num" th:text="${#numbers.formatInteger(it.lineTotal, 1, 'COMMA')}"></td></tr>
+<tr><td><strong>합계 (배송비 포함)</strong></td><td></td><td class="num"><strong th:text="${#numbers.formatInteger(o.totalAmount, 1, 'COMMA')}"></strong></td></tr></tbody></table></section>
+<section class="box"><h2>주문자 / 배송지</h2>
+<p th:text="${o.ordererName} + ' · ' + ${o.ordererPhone} + ' · ' + ${o.ordererEmail}"></p>
+<p style="margin-top:8px" th:text="${o.recipientName} + ' · ' + ${o.recipientPhone}"></p>
+<p th:text="'(' + ${o.zipcode} + ') ' + ${o.address1} + ' ' + ${o.address2 ?: ''}"></p>
+<p th:if="${o.memo}" th:text="'메모: ' + ${o.memo}"></p>
+<p th:if="${o.giftMessage}" class="pre" th:text="'메시지 카드: ' + ${o.giftMessage}" style="margin-top:8px;padding:12px;background:#f6f1ea"></p></section>
+<form th:action="@{/admin/orders/{id}(id=${o.id})}" method="post" class="box form-grid"><h2>상태 / 송장</h2>
+<div class="field"><label>주문 상태</label><select name="status"><option th:each="s : ${statuses}" th:value="${s}" th:text="${s.label}" th:selected="${s == o.status}"></option></select></div>
+<div class="two"><div class="field"><label>택배사</label><input name="carrier" th:value="${o.carrier}"></div><div class="field"><label>송장번호</label><input name="trackingNo" th:value="${o.trackingNo}"></div></div>
+<button class="btn btn-burgundy" type="submit">저장</button></form>
+</div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

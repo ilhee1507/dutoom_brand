@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('주문 완료 | ' + ${brand.name()}, '두툼장어 주문 완료')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page narrow" style="text-align:center">
+        <p class="eyebrow">THANK YOU</p>
+        <h1 style="font-family:var(--serif-kr);font-size:32px;margin-top:12px">주문이 완료되었습니다</h1>
+        <p style="margin-top:16px;color:#5d544c">주문번호 <strong th:text="${order.orderNo}"></strong></p>
+        <p style="margin-top:6px;color:#5d544c" th:text="${order.status.label} + ' · ' + ${#numbers.formatInteger(order.totalAmount, 1, 'COMMA')} + '원'"></p>
+        <p th:if="${order.memberId == null}" style="margin-top:18px;font-size:14px;color:#8a6a43">비회원 주문은 주문번호와 비밀번호로 조회할 수 있습니다. 주문번호를 꼭 보관해 주세요.</p>
+        <p style="margin-top:30px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <a th:href="@{/order/{no}(no=${order.orderNo})}" class="btn btn-burgundy">주문 상세 보기</a>
+            <a href="/" class="btn btn-dark">홈으로</a>
+        </p>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

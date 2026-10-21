@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('결제 | ' + ${brand.name()}, '두툼장어 결제')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page narrow">
+        <div class="page-head"><p class="eyebrow">PAYMENT</p><h1>결제</h1></div>
+        <section class="box">
+            <div class="sum-row"><span>주문번호</span><strong th:text="${order.orderNo}"></strong></div>
+            <div class="sum-row"><span>주문 상품</span><span th:text="${order.orderName}"></span></div>
+            <div class="sum-row sum-total"><span>결제 금액</span><span th:text="${#numbers.formatInteger(order.totalAmount, 1, 'COMMA')} + '원'"></span></div>
+        </section>
+
+        <!-- 토스페이먼츠 결제창 (PAYMENT_MODE=toss) -->
+        <section class="box" th:if="${shop.payment().isToss()}">
+            <button type="button" class="btn btn-burgundy btn-block" id="toss-pay" style="min-height:56px">카드 · 간편결제로 결제하기</button>
+            <script src="https://js.tosspayments.com/v2/standard"></script>
+            <script th:inline="javascript">
+                document.getElementById('toss-pay').addEventListener('click', async () => {
+                    const tp = TossPayments(/*[[${shop.payment().tossClientKey()}]]*/ '');
+                    const payment = tp.payment({customerKey: TossPayments.ANONYMOUS});
+                    await payment.requestPayment({
+                        method: 'CARD',
+                        amount: {currency: 'KRW', value: /*[[${order.totalAmount}]]*/ 0},
+                        orderId: /*[[${order.orderNo}]]*/ '',
+                        orderName: /*[[${order.orderName}]]*/ '',
+                        customerName: /*[[${order.ordererName}]]*/ '',
+                        customerEmail: /*[[${order.ordererEmail}]]*/ '',
+                        successUrl: location.origin + '/payment/success',
+                        failUrl: location.origin + '/payment/fail'
+                    });
+                });
+            </script>
+        </section>
+
+        <!-- 테스트 결제 (PG 미설정 환경) -->
+        <section class="box" th:unless="${shop.payment().isToss()}">
+            <p style="font-size:14px;color:#8a6a43;margin-bottom:14px">테스트 결제 모드입니다. 실제 결제가 발생하지 않습니다. 운영 시 PAYMENT_MODE=toss 와 PG 키를 설정하세요.</p>
+            <form th:action="@{/order/{no}/mock-pay(no=${order.orderNo})}" method="post">
+                <button type="submit" class="btn btn-burgundy btn-block" style="min-height:56px">테스트 결제 완료하기</button>
+            </form>
+        </section>
+        <form th:action="@{/order/{no}/cancel(no=${order.orderNo})}" method="post" style="margin-top:16px;text-align:center">
+            <button type="submit" style="background:none;border:0;color:#8a8077;text-decoration:underline;cursor:pointer">주문 취소</button>
+        </form>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

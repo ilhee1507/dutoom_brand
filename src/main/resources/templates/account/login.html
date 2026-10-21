@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('로그인 | ' + ${brand.name()}, '두툼장어 회원 로그인')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page narrow">
+        <div class="page-head" style="text-align:center"><p class="eyebrow">MEMBER</p><h1>로그인</h1></div>
+        <p class="field-error box" th:if="${param.error}">이메일 또는 비밀번호가 올바르지 않습니다.</p>
+        <form th:action="@{/login}" method="post" class="box form-grid">
+            <div class="field"><label for="em">이메일</label><input id="em" type="email" name="email" required autocomplete="username"></div>
+            <div class="field"><label for="pw">비밀번호</label><input id="pw" type="password" name="password" required autocomplete="current-password"></div>
+            <button class="btn btn-burgundy btn-block" type="submit">로그인</button>
+        </form>
+        <p style="margin-top:18px;display:flex;justify-content:center;gap:20px;font-size:14px">
+            <a href="/signup" style="text-decoration:underline">회원가입</a>
+            <a href="/order/lookup" style="text-decoration:underline">비회원 주문조회</a>
+        </p>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

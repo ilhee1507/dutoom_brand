@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('주문 상세 | ' + ${brand.name()}, '두툼장어 주문 상세')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page" th:object="${order}">
+        <div class="page-head"><p class="eyebrow">ORDER</p><h1>주문 상세</h1>
+            <p><span th:text="'주문번호 ' + *{orderNo}"></span> · <span th:text="*{#temporals.format(createdAt, 'yyyy.MM.dd HH:mm')}"></span> <span class="status" th:text="*{status.label}"></span></p></div>
+        <section class="box table-wrap">
+            <h2>주문 상품</h2>
+            <table class="table"><thead><tr><th>상품</th><th class="num">수량</th><th class="num">금액</th></tr></thead><tbody>
+            <tr th:each="it : *{items}"><td><span th:text="${it.productName}"></span><span th:if="${it.optionName}" th:text="' / ' + ${it.optionName}" style="color:#8a8077;font-size:13px"></span></td>
+                <td class="num" th:text="${it.quantity}"></td><td class="num" th:text="${#numbers.formatInteger(it.lineTotal, 1, 'COMMA')} + '원'"></td></tr>
+            </tbody></table>
+            <div style="max-width:320px;margin:16px 0 0 auto">
+                <div class="sum-row"><span>상품 금액</span><span th:text="*{#numbers.formatInteger(itemsAmount, 1, 'COMMA')} + '원'"></span></div>
+                <div class="sum-row"><span>배송비</span><span th:text="*{#numbers.formatInteger(shippingFee, 1, 'COMMA')} + '원'"></span></div>
+                <div class="sum-row sum-total"><span>총 결제 금액</span><span th:text="*{#numbers.formatInteger(totalAmount, 1, 'COMMA')} + '원'"></span></div>
+            </div>
+        </section>
+        <section class="box">
+            <h2>배송 조회</h2>
+            <p th:if="*{trackingNo == null or trackingNo.isBlank()}" style="color:#5d544c" th:text="*{status.name() == 'PENDING_PAYMENT'} ? '결제 완료 후 배송이 준비됩니다.' : '송장 등록 전입니다. 출고 후 송장번호가 표시됩니다.'"></p>
+            <p th:unless="*{trackingNo == null or trackingNo.isBlank()}"><strong th:text="*{carrier}"></strong> <span th:text="*{trackingNo}"></span></p>
+            <dl class="pd-meta" style="border-color:#e6ded2">
+                <div style="border-color:#e6ded2"><dt style="color:#8a8077">받는 분</dt><dd style="color:#3e3731" th:text="*{recipientName} + ' / ' + *{recipientPhone}"></dd></div>
+                <div style="border-color:#e6ded2"><dt style="color:#8a8077">주소</dt><dd style="color:#3e3731" th:text="'(' + *{zipcode} + ') ' + *{address1} + ' ' + *{address2 ?: ''}"></dd></div>
+                <div style="border-color:#e6ded2" th:if="*{memo}"><dt style="color:#8a8077">배송 메모</dt><dd style="color:#3e3731" th:text="*{memo}"></dd></div>
+                <div style="border-color:#e6ded2" th:if="*{giftMessage}"><dt style="color:#8a8077">메시지 카드</dt><dd style="color:#3e3731" class="pre" th:text="*{giftMessage}"></dd></div>
+            </dl>
+        </section>
+        <p style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+            <a th:if="*{status.name() == 'PENDING_PAYMENT'}" th:href="@{/order/{no}/pay(no=*{orderNo})}" class="btn btn-burgundy">결제하기</a>
+            <a href="/inquiry" class="btn btn-dark">주문 문의</a>
+        </p>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

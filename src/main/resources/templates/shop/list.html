@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${title} + ' | ' + ${brand.name()}, ${title} + ' - ' + ${brand.name()} + '의 ' + ${title} + ' 상품을 확인하고 바로 주문하세요.')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page">
+        <nav class="crumbs" aria-label="위치"><a href="/">홈</a> › <span th:text="${title}"></span></nav>
+        <div class="page-head">
+            <p class="eyebrow" th:text="${eyebrow}"></p>
+            <h1 th:text="${q != null ? '‘' + q + '’ 검색 결과' : title}"></h1>
+        </div>
+        <ul class="product-grid" th:unless="${items.isEmpty()}">
+            <li class="product-card" th:each="p : ${items}">
+                <a th:href="${p.path}">
+                    <img th:src="${p.imageUrl ?: '/images/signature.jpg'}" th:alt="${p.name}" loading="lazy" width="400" height="300">
+                    <h2><span th:text="${p.name}"></span><span class="tag" th:if="${p.soldOut}">품절</span></h2>
+                    <p th:text="${p.summary}"></p>
+                    <p class="price" th:text="${#numbers.formatInteger(p.price, 1, 'COMMA')} + '원'"></p>
+                </a>
+            </li>
+        </ul>
+        <p class="empty" th:if="${items.isEmpty()}">등록된 상품이 없습니다.</p>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

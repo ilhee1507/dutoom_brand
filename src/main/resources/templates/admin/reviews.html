@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('관리자 | ' + ${brand.name()}, '두툼장어 관리자')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+<div class="page" style="max-width:1240px">
+<nav style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:28px;font-weight:600">
+  <a href="/admin">대시보드</a><a href="/admin/products">상품</a><a href="/admin/brands">브랜드</a><a href="/admin/orders">주문/배송</a><a href="/admin/articles">콘텐츠</a><a href="/admin/inquiries">문의</a><a href="/admin/reviews">후기</a>
+</nav>
+<div class="page-head"><h1>고객 후기</h1><p>부적절한 후기를 삭제합니다. 삭제하면 작성자가 같은 상품에 후기를 다시 쓸 수 있습니다.</p></div>
+<p class="empty" th:if="${items.isEmpty()}">후기가 없습니다.</p>
+<div class="box table-wrap" th:unless="${items.isEmpty()}"><table class="table"><thead><tr><th>작성일</th><th>상품</th><th>작성자</th><th>별점</th><th>내용</th><th></th></tr></thead>
+<tbody><tr th:each="r : ${items}">
+<td th:text="${#temporals.format(r.createdAt, 'yyyy.MM.dd')}" style="white-space:nowrap"></td>
+<td><a th:href="${r.product.path} + '#reviews'" th:text="${r.product.name}" target="_blank"></a></td>
+<td th:text="${r.authorName}" style="white-space:nowrap"></td>
+<td th:text="${#strings.repeat('★', r.rating)}" style="color:#b08a4a;white-space:nowrap"></td>
+<td class="pre" th:text="${r.content}"></td>
+<td><form th:action="@{/admin/reviews/{id}/delete(id=${r.id})}" method="post" onsubmit="return confirm('이 후기를 삭제할까요? 되돌릴 수 없습니다.')">
+<button type="submit" style="background:none;border:0;padding:0;color:#8a2a2a;cursor:pointer;font:inherit;white-space:nowrap">삭제</button></form></td>
+</tr></tbody></table></div>
+</div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

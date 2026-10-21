@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('마이페이지 | ' + ${brand.name()}, '두툼장어 마이페이지')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page">
+        <div class="page-head"><p class="eyebrow">MY PAGE</p><h1 th:text="${me.name} + '님'"></h1><p th:text="${me.email}"></p></div>
+        <section class="box table-wrap">
+            <h2>주문 내역</h2>
+            <p class="empty" th:if="${orders.isEmpty()}" style="padding:20px 0">주문 내역이 없습니다.</p>
+            <table class="table" th:unless="${orders.isEmpty()}">
+                <thead><tr><th>주문일</th><th>주문번호</th><th>상품</th><th class="num">금액</th><th>상태</th></tr></thead>
+                <tbody><tr th:each="o : ${orders}">
+                    <td th:text="${#temporals.format(o.createdAt, 'yyyy.MM.dd')}"></td>
+                    <td><a th:href="@{/order/{no}(no=${o.orderNo})}" th:text="${o.orderNo}" style="text-decoration:underline"></a></td>
+                    <td th:text="${o.orderName}"></td>
+                    <td class="num" th:text="${#numbers.formatInteger(o.totalAmount, 1, 'COMMA')} + '원'"></td>
+                    <td><span class="status" th:text="${o.status.label}"></span></td>
+                </tr></tbody>
+            </table>
+        </section>
+        <section class="box">
+            <h2>나의 문의</h2>
+            <p class="empty" th:if="${inquiries.isEmpty()}" style="padding:20px 0">문의 내역이 없습니다. <a href="/inquiry" style="text-decoration:underline">문의하기</a></p>
+            <details th:each="q : ${inquiries}" style="border-top:1px solid #e6ded2;padding:14px 0">
+                <summary style="cursor:pointer"><strong th:text="${q.title}"></strong> <span class="status" th:text="${q.answer != null ? '답변 완료' : '답변 대기'}"></span></summary>
+                <p class="pre" th:text="${q.content}" style="margin-top:10px;color:#5d544c"></p>
+                <p class="pre" th:if="${q.answer}" th:text="${q.answer}" style="margin-top:10px;padding:14px;background:#f6f1ea"></p>
+            </details>
+        </section>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

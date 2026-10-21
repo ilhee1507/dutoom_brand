@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('비회원 주문조회 | ' + ${brand.name()}, '두툼장어 비회원 주문조회')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page narrow">
+        <div class="page-head"><p class="eyebrow">ORDER LOOKUP</p><h1>비회원 주문조회</h1></div>
+        <form th:action="@{/order/lookup}" method="post" class="box form-grid">
+            <div class="field"><label for="no">주문번호</label><input id="no" name="orderNo" required inputmode="numeric"></div>
+            <div class="field"><label for="pw">주문 비밀번호</label><input id="pw" type="password" name="password" required></div>
+            <button class="btn btn-burgundy btn-block" type="submit">조회하기</button>
+        </form>
+        <p style="margin-top:16px;text-align:center;font-size:14px">회원이신가요? <a href="/login" style="text-decoration:underline">로그인</a></p>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

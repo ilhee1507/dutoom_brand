@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${#strings.replace(a.title, '&#10;', ' ')} + ' | ' + ${brand.name()}, ${a.summary != null ? #strings.replace(a.summary, '&#10;', ' ') : a.title})}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <article class="page" style="max-width:920px">
+        <nav class="crumbs" aria-label="위치"><a href="/">홈</a> ›
+            <a th:href="${a.type == 'STORY' ? '/story' : '/guide'}" th:text="${a.type == 'STORY' ? '브랜드 스토리' : '맛있게 즐기는 법'}"></a></nav>
+        <header class="page-head">
+            <p class="eyebrow" th:text="${a.type == 'STORY' ? 'BRAND STORY' : 'DINING EXPERIENCE'}"></p>
+            <h1 class="pre" th:text="${a.title}"></h1>
+            <p class="pre" th:text="${a.summary}"></p>
+            <p class="meta-date">작성 <time th:datetime="${#temporals.format(a.createdAt, 'yyyy-MM-dd')}" th:text="${#temporals.format(a.createdAt, 'yyyy.MM.dd')}"></time>
+                · 수정 <time th:datetime="${#temporals.format(a.updatedAt, 'yyyy-MM-dd')}" th:text="${#temporals.format(a.updatedAt, 'yyyy.MM.dd')}"></time> · 두툼장어</p>
+        </header>
+        <figure class="article-hero" th:if="${a.imageUrl}" style="margin:0"><img th:src="${a.imageUrl}" th:alt="${#strings.replace(a.title, '&#10;', ' ')}"></figure>
+        <div class="article-body" th:text="${a.body}"></div>
+        <section th:if="${stories != null and !stories.isEmpty()}" style="margin-top:56px;padding-top:32px;border-top:1px solid #e4dccf">
+            <h2 style="font-family:var(--serif-kr);font-weight:500;font-size:22px;margin:0 0 20px">브랜드 이야기 더 보기</h2>
+            <ul class="product-grid">
+                <li class="product-card" th:each="s : ${stories}">
+                    <a th:href="${s.path}"><img th:if="${s.imageUrl}" th:src="${s.imageUrl}" th:alt="${#strings.replace(s.title, '&#10;', ' ')}" loading="lazy">
+                        <h3 class="pre" th:text="${s.title}"></h3><p th:text="${s.summary}"></p></a>
+                </li>
+            </ul>
+        </section>
+        <p style="margin-top:48px;display:flex;gap:10px;flex-wrap:wrap">
+            <a href="/products" class="btn btn-burgundy">프리미엄 장어 보기</a>
+            <a href="/guide" class="btn btn-dark" th:if="${a.type == 'GUIDE'}">다른 가이드 보기</a>
+        </p>
+    </article>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

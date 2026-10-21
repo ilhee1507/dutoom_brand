@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('관리자 | ' + ${brand.name()}, '두툼장어 관리자')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+<div class="page" style="max-width:1240px">
+<nav style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:28px;font-weight:600">
+  <a href="/admin">대시보드</a><a href="/admin/products">상품</a><a href="/admin/brands">브랜드</a><a href="/admin/orders">주문/배송</a><a href="/admin/articles">콘텐츠</a><a href="/admin/inquiries">문의</a><a href="/admin/reviews">후기</a>
+</nav>
+<div class="page-head" style="display:flex;justify-content:space-between;align-items:end"><h1>상품 관리</h1><a href="/admin/products/new" class="btn btn-burgundy">상품 등록</a></div>
+<div class="box table-wrap"><table class="table">
+<thead><tr><th>ID</th><th>상품명</th><th>분류</th><th class="num">가격</th><th class="num">재고</th><th>상태</th></tr></thead>
+<tbody><tr th:each="p : ${items}">
+<td th:text="${p.id}"></td><td><a th:href="@{/admin/products/{id}(id=${p.id})}" th:text="${p.name}" style="text-decoration:underline"></a> <span th:if="${p.featured}" class="tag">대표</span></td>
+<td th:text="${brands.get(p.brand).name() + ' · ' + (p.gift ? '선물세트' : brands.get(p.brand).productTitle())}"></td><td class="num" th:text="${#numbers.formatInteger(p.price, 1, 'COMMA')}"></td>
+<td class="num" th:text="${p.stock}"></td><td th:text="${p.active ? '판매중' : '판매중지'}"></td></tr></tbody></table></div>
+</div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

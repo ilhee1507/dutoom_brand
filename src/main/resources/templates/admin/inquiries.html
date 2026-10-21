@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('관리자 | ' + ${brand.name()}, '두툼장어 관리자')}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+<div class="page" style="max-width:1240px">
+<nav style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:28px;font-weight:600">
+  <a href="/admin">대시보드</a><a href="/admin/products">상품</a><a href="/admin/brands">브랜드</a><a href="/admin/orders">주문/배송</a><a href="/admin/articles">콘텐츠</a><a href="/admin/inquiries">문의</a><a href="/admin/reviews">후기</a>
+</nav>
+<div class="page-head"><h1>고객 문의</h1></div>
+<p class="empty" th:if="${items.isEmpty()}">문의가 없습니다.</p>
+<section class="box" th:each="q : ${items}">
+<p style="font-size:13px;color:#8a8077" th:text="${#temporals.format(q.createdAt, 'yyyy.MM.dd HH:mm')} + ' · ' + ${q.name} + ' · ' + ${q.email} + (${q.memberId == null} ? ' (비회원)' : '')"></p>
+<h2 style="margin-top:6px" th:text="${q.title}"></h2><p class="pre" th:text="${q.content}"></p>
+<form th:action="@{/admin/inquiries/{id}(id=${q.id})}" method="post" class="form-grid" style="margin-top:14px">
+<div class="field"><label>답변</label><textarea name="answer" required th:text="${q.answer}"></textarea>
+<p class="hint" th:if="${q.memberId == null}">비회원 문의는 답변 내용을 이메일로 별도 발송해 주세요.</p></div>
+<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><button class="btn btn-dark" type="submit" th:text="${q.answer == null ? '답변 등록' : '답변 수정'}"></button>
+<button class="btn btn-outline" type="submit" th:formaction="@{/admin/inquiries/{id}/delete(id=${q.id})}" formnovalidate
+        onclick="return confirm('이 문의를 삭제할까요? 되돌릴 수 없습니다.')" style="color:#8a2a2a;border-color:#c9a3a3">삭제</button></div></form></section>
+</div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

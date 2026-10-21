@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${brand.name() + ' | ' + brand.productTitle() + ' 전문 브랜드'}, ${brand.heroTitle() + ' ' + brand.heroAccent() + '. ' + brand.name() + '는 ' + brand.productTitle() + '와 선물세트를 선보이는 ' + brand.productTitle() + ' 전문 브랜드입니다.'})}"></head>
+<body class="page-home">
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main th:style="${brand.theme()}">
+    <!-- SECTION 02. HERO -->
+    <section class="hero" aria-roledescription="carousel" th:aria-label="${brand.name() + ' 메인 배너'}" data-slider>
+        <div class="hero-media">
+            <img th:each="h, s : ${brand.heroImages()}" class="hero-slide" th:classappend="${s.first} ? 'is-active'"
+                 th:src="${h.src()}" th:alt="${h.alt()}" th:attr="fetchpriority=${s.first} ? 'high' : null, loading=${s.first} ? null : 'lazy'">
+        </div>
+        <div class="hero-content">
+            <p class="eyebrow" th:text="${brand.eyebrow()}"></p>
+            <h1 class="hero-title"><span th:text="${brand.heroTitle()}"></span><br><span class="gold" th:text="${brand.heroAccent()}"></span></h1>
+            <p class="hero-sub pre" th:text="${brand.heroSub()}"></p>
+            <a th:href="'/products' + ${brandQuery}" class="btn btn-gold hero-btn"><span th:text="${brand.productTitle() + ' 만나보기'}"></span> <svg class="arr"><use href="#i-arrow"/></svg></a>
+            <div class="hero-pager" th:if="${brand.heroImages().size() > 1}"><span class="cur" data-cur>01</span><span class="bar"></span><span class="tot" th:text="${#numbers.formatInteger(brand.heroImages().size(), 2)}">02</span></div>
+        </div>
+        <div class="hero-ctrl" th:if="${brand.heroImages().size() > 1}">
+            <button type="button" class="circle-btn" data-prev aria-label="이전 배너"><svg><use href="#i-prev"/></svg></button>
+            <button type="button" class="circle-btn" data-pause aria-label="자동 재생 일시정지"><svg><use href="#i-pause"/></svg></button>
+        </div>
+    </section>
+
+    <!-- SECTION 03. BRAND BENEFITS -->
+    <section class="benefits" th:aria-label="${brand.name() + '의 약속'}">
+        <ul class="feature-row">
+            <li th:each="b : ${brand.benefits() ?: shop.benefits()}">
+                <svg class="ficon"><use th:href="'#i-' + ${b.icon()}"/></svg>
+                <div><strong th:text="${b.title()}"></strong><span th:text="${b.sub()}"></span></div>
+            </li>
+        </ul>
+    </section>
+
+    <!-- SECTION 04. BRAND STORY -->
+    <section class="story" th:classappend="${brand.natureImage() == null} ? 'no-nature'" aria-labelledby="story-title">
+        <div class="story-img" th:if="${brand.storyImage() != null}"><img th:src="${brand.storyImage().src()}" th:alt="${brand.storyImage().alt()}" width="505" height="285" loading="lazy"></div>
+        <div class="story-text">
+            <p class="eyebrow">BRAND STORY</p>
+            <h2 id="story-title" class="pre" th:text="${story != null ? story.title : '좋은 장어는&#10;정성에서 시작됩니다'}">좋은 장어는<br>정성에서 시작됩니다</h2>
+            <p class="pre" th:text="${story != null ? story.summary : ''}"></p>
+            <a th:href="${story != null ? story.path : '/story'}" class="text-link"><span th:text="${brand.name() + ' 이야기 보기'}"></span> <svg class="arr"><use href="#i-arrow"/></svg></a>
+        </div>
+        <div class="story-img story-nature" th:if="${brand.natureImage() != null}">
+            <img th:src="${brand.natureImage().src()}" th:alt="${brand.natureImage().alt()}" width="736" height="1140" loading="lazy">
+            <p class="nature-copy pre" th:text="${brand.natureCopy()}"></p>
+        </div>
+    </section>
+
+    <!-- SECTION 05. SIGNATURE PRODUCT -->
+    <section class="signature" aria-labelledby="sig-title">
+        <div class="sig-text">
+            <p class="eyebrow">SIGNATURE PRODUCT</p>
+            <h2 id="sig-title" class="pre" th:text="${brand.signatureTitle()}"></h2>
+            <p class="pre" th:text="${brand.signatureText()}"></p>
+            <a th:href="${signature != null ? signature.path : '/products' + brandQuery}" class="btn btn-burgundy">지금 주문하기 <svg class="arr"><use href="#i-arrow"/></svg></a>
+        </div>
+        <div class="sig-img"><img th:if="${brand.signatureImage() != null}" class="edge-fade" th:src="${brand.signatureImage().src()}" th:alt="${brand.signatureImage().alt()}" width="468" height="248" loading="lazy"></div>
+        <div class="sig-card" th:if="${signature != null}" th:object="${signature}">
+            <h3><a th:href="*{path}" th:text="*{name}">두툼장어 시그니처</a></h3>
+            <p class="sig-summary" th:text="*{summary}"></p>
+            <p class="price"><span class="won">₩</span> <span th:text="*{#numbers.formatInteger(price, 1, 'COMMA')}"></span></p>
+            <p class="weight" th:text="*{weight}"></p>
+            <form th:action="@{/cart/add}" method="post" class="buy-form" data-buy-form>
+                <input type="hidden" name="productId" th:value="*{id}">
+                <div class="buy-row">
+                    <select th:if="*{!options.isEmpty()}" name="optionId" required aria-label="옵션 선택">
+                        <option th:each="o : *{options}" th:value="${o.id}" th:attr="data-extra=${o.extraPrice}" th:text="${o.name} + (${o.extraPrice} > 0 ? ' (+' + ${#numbers.formatInteger(o.extraPrice, 1, 'COMMA')} + '원)' : '')"></option>
+                    </select>
+                    <div class="qty"><button type="button" data-qty="-1" aria-label="수량 감소">−</button><input type="number" name="quantity" value="1" min="1" max="99" aria-label="수량"><button type="button" data-qty="1" aria-label="수량 증가">+</button></div>
+                </div>
+                <div class="buy-btns" th:unless="*{soldOut}">
+                    <button type="submit" name="action" value="cart" class="btn btn-brown"><svg class="ico"><use href="#i-cart"/></svg> 장바구니 담기</button>
+                    <button type="submit" name="action" value="buy" class="btn btn-burgundy">바로 구매</button>
+                </div>
+                <p class="soldout" th:if="*{soldOut}">일시 품절</p>
+            </form>
+        </div>
+        <div class="sig-card sig-empty" th:if="${signature == null}">
+            <p>판매 중인 상품을 준비하고 있습니다.</p>
+        </div>
+    </section>
+
+    <!-- 브랜드 상품 목록 (brand.productGrid) -->
+    <section class="page-light" th:if="${brand.productGrid() and !items.isEmpty()}" aria-labelledby="brand-products-title">
+        <div class="page">
+            <div class="page-head"><p class="eyebrow" th:text="${brand.productEyebrow()}"></p><h2 id="brand-products-title" th:text="${brand.name() + ' 상품'}"></h2></div>
+            <ul class="product-grid">
+                <li class="product-card" th:each="p : ${items}">
+                    <a th:href="${p.path}">
+                        <img th:src="${p.imageUrl ?: '/images/signature.jpg'}" th:alt="${p.name}" loading="lazy" width="400" height="300">
+                        <h3><span th:text="${p.name}"></span><span class="tag" th:if="${p.soldOut}">품절</span></h3>
+                        <p th:text="${p.summary}"></p>
+                        <p class="price" th:text="${#numbers.formatInteger(p.price, 1, 'COMMA')} + '원'"></p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SECTION 06. ROYAL GIFT COLLECTION (브랜드에 선물세트가 있을 때) -->
+    <section class="gift" th:if="${hasGifts}" aria-labelledby="gift-title">
+        <div class="gift-text">
+            <p class="eyebrow">GIFT COLLECTION</p>
+            <h2 id="gift-title">소중한 분께<br>특별한 마음을 전하세요</h2>
+            <p>깊은 풍미와 정성을 담아<br>마음을 전하는 특별한 선물.</p>
+            <a th:href="'/gifts' + ${brandQuery}" class="btn btn-outline">선물세트 만나보기 <svg class="arr"><use href="#i-arrow"/></svg></a>
+        </div>
+        <div class="gift-img" th:with="g=${brand.giftImage()}"><img class="edge-fade" th:src="${g != null ? g.src() : '/images/gift.jpg'}" th:alt="${g != null ? g.alt() : '골드 리본을 두른 버건디 선물 상자와 메시지 카드'}" width="458" height="252" loading="lazy"></div>
+        <ul class="gift-points">
+            <li><svg class="ficon"><use href="#i-box"/></svg><div><strong>프리미엄 패키지</strong><span>격식 있는 선물 포장</span></div></li>
+            <li><svg class="ficon"><use href="#i-card"/></svg><div><strong>메시지 카드</strong><span>마음을 전하는 한 마디</span></div></li>
+            <li><svg class="ficon"><use href="#i-deliver"/></svg><div><strong>선물 배송</strong><span>받는 분께 직접 전달</span></div></li>
+        </ul>
+    </section>
+
+    <!-- SECTION 07. DINING EXPERIENCE -->
+    <section class="dining" th:if="${brand.guides()}" aria-labelledby="dining-title">
+        <div class="dining-img"><img src="/images/dining.jpg" alt="그릇에 담긴 장어 요리" width="352" height="160" loading="lazy"></div>
+        <div class="dining-text">
+            <p class="eyebrow">DINING EXPERIENCE</p>
+            <h2 id="dining-title">더 맛있게, 더 특별하게</h2>
+            <p th:text="${brand.name() + '를 더욱 특별하게 즐기는 방법.'}"></p>
+            <a href="/guide" class="text-link">맛있게 즐기는 법 보기 <svg class="arr"><use href="#i-arrow"/></svg></a>
+        </div>
+        <ul class="guide-cards">
+            <li th:each="g : ${guides}">
+                <a th:href="${g.path}">
+                    <img th:src="${g.imageUrl}" th:alt="${g.title}" width="720" height="480" loading="lazy">
+                    <strong th:text="${g.title}"></strong>
+                    <span>바로 보기 →</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+
+    <!-- SECTION 08. TRUST & SERVICE -->
+    <section class="trust" aria-label="서비스 안내">
+        <ul class="feature-row">
+            <li th:each="t : ${shop.trust()}">
+                <svg class="ficon"><use th:href="'#i-' + ${t.icon()}"/></svg>
+                <div><strong th:text="${t.title()}"></strong>
+                    <span th:text="${t.icon() == 'phone' ? (#strings.isEmpty(shop.company().csHours()) ? '고객 문의 게시판 운영' : shop.company().csHours()) : t.sub()}"></span></div>
+            </li>
+        </ul>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

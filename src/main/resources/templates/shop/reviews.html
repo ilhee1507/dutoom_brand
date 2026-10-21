@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('고객 후기 | ' + ${brand.name()}, ${brand.name() + '를 구매한 고객님들이 남긴 실제 구매 후기입니다.'})}"></head>
+<body>
+<svg th:replace="~{fragments/layout :: icons}"></svg>
+<header th:replace="~{fragments/layout :: header}"></header>
+<main class="page-light">
+    <div class="page">
+        <nav class="crumbs" aria-label="위치"><a th:href="'/' + ${brandQuery}">홈</a> › 고객 후기</nav>
+        <div class="page-head"><p class="eyebrow">REVIEWS</p><h1>고객 후기</h1><p>구매 회원이 작성한 후기만 게시됩니다.</p></div>
+        <p class="empty" th:if="${reviews.isEmpty()}">아직 등록된 후기가 없습니다.</p>
+        <article class="review" th:each="r : ${reviews}">
+            <div class="review-head"><span class="stars" th:text="${#strings.repeat('★', r.rating)}"></span>
+                <a th:href="${r.product.path}" th:text="${r.product.name}" style="font-weight:600;color:#3e3731"></a>
+                <span th:text="${r.maskedName}"></span><time th:text="${#temporals.format(r.createdAt, 'yyyy.MM.dd')}"></time></div>
+            <p th:text="${r.content}"></p>
+        </article>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
