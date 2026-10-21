@@ -5,7 +5,7 @@ Spring Boot 3.3 · Java 21 · Thymeleaf · PostgreSQL · Flyway. 디자인 기�
 ## 실행
 
 ```bash
-docker compose up -d --build        # http://localhost:8088
+docker compose up -d --build        # http://localhost:8089
 ```
 
 `src/main/resources` 변경 후에는 `docker compose up -d --build app`으로 다시 빌드하고, 정적 파일은 7일 캐시되므로 브라우저에서 Ctrl+F5.
@@ -14,9 +14,9 @@ docker compose up -d --build        # http://localhost:8088
 
 | 구분 | 주소 | 아이디 | 비밀번호 |
 |---|---|---|---|
-| 관리자 | http://localhost:8088/admin | `admin@dutoom.local` | `admin1234!` |
-| 회원 | http://localhost:8088/login | `kim@` `lee@` `park@` `choi@sample.local` | `sample1234!` |
-| 비회원 주문조회 | http://localhost:8088/order/lookup | 주문번호 | 주문 시 입력한 비밀번호 |
+| 관리자 | http://localhost:8089/admin | `admin@dutoom.local` | `admin1234!` |
+| 회원 | http://localhost:8089/login | `kim@` `lee@` `park@` `choi@sample.local` | `sample1234!` |
+| 비회원 주문조회 | http://localhost:8089/order/lookup | 주문번호 | 주문 시 입력한 비밀번호 |
 
 샘플 회원별 데이터:
 
@@ -65,14 +65,14 @@ docker compose logs app | grep -E "사업자 정보|관리자 계정"   # 주입
 
 - `SPRING_PROFILES_ACTIVE=` 처럼 **비워 두면 운영 프로필**, 키 자체가 없으면 local(샘플).
 - local 프로필에서 쓸 기본값(샘플 관리자·사업자 정보)을 살리려면 `.env`에서 그 줄을 지운다 (빈 값도 "설정됨"으로 본다).
-- 포트는 `APP_PORT` (기본 8088). 서버 방화벽·클라우드 보안 그룹에서 해당 포트를 열어야 외부 접속 가능.
+- 포트는 `APP_PORT` (기본 8089). 서버 방화벽·클라우드 보안 그룹에서 해당 포트를 열어야 외부 접속 가능.
 - `env_file` 의 `required: false` 는 Docker Compose 2.24 이상 필요.
 
 ## 운영 환경변수
 
 | 변수 | 설명 |
 |---|---|
-| `APP_PORT` | 외부 포트 (기본 8088) |
+| `APP_PORT` | 외부 포트 (기본 8089) |
 | `SPRING_PROFILES_ACTIVE` | 운영은 비워둠 (`local`이면 샘플 상품·기본 관리자 생성) |
 | `DB_URL` `DB_USER` `DB_PASSWORD` | PostgreSQL |
 | `SHOP_BASE_URL` | canonical / sitemap / OG 절대 URL |

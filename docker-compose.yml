@@ -26,12 +26,12 @@ services:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE-local}
       DB_URL: jdbc:postgresql://db:5432/dutoom
       DB_PASSWORD: ${DB_PASSWORD:-dutoom}
-      SHOP_BASE_URL: ${SHOP_BASE_URL:-http://localhost:8088}
+      SHOP_BASE_URL: ${SHOP_BASE_URL:-http://localhost:8089}
       PAYMENT_MODE: ${PAYMENT_MODE:-mock}
       TOSS_CLIENT_KEY: ${TOSS_CLIENT_KEY:-}
       TOSS_SECRET_KEY: ${TOSS_SECRET_KEY:-}
     ports:
-      - "${APP_PORT:-8088}:8080"   # 한 서버에 여러 프로젝트를 띄울 때 .env 에서 변경
+      - "${APP_PORT:-8089}:8080"   # 한 서버에 여러 프로젝트를 띄울 때 .env 에서 변경
     volumes:
       - uploads:/app/uploads
 
